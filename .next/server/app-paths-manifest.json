@@ -1,0 +1,22 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/properties/[id]/page": "app/admin/properties/[id]/page.js",
+  "/api/admin/import/route": "app/api/admin/import/route.js",
+  "/api/admin/login/route": "app/api/admin/login/route.js",
+  "/api/admin/properties/[id]/facilities/[facilityId]/route": "app/api/admin/properties/[id]/facilities/[facilityId]/route.js",
+  "/api/admin/properties/[id]/facilities/route": "app/api/admin/properties/[id]/facilities/route.js",
+  "/api/admin/properties/[id]/photos/[photoId]/route": "app/api/admin/properties/[id]/photos/[photoId]/route.js",
+  "/api/admin/properties/[id]/photos/from-url/route": "app/api/admin/properties/[id]/photos/from-url/route.js",
+  "/api/admin/properties/[id]/photos/route": "app/api/admin/properties/[id]/photos/route.js",
+  "/api/admin/properties/[id]/reviews/[reviewId]/route": "app/api/admin/properties/[id]/reviews/[reviewId]/route.js",
+  "/api/admin/properties/[id]/reviews/route": "app/api/admin/properties/[id]/reviews/route.js",
+  "/api/admin/properties/[id]/route": "app/api/admin/properties/[id]/route.js",
+  "/api/admin/properties/route": "app/api/admin/properties/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/media/[...path]/route": "app/media/[...path]/route.js",
+  "/page": "app/page.js",
+  "/properties/[slug]/page": "app/properties/[slug]/page.js"
+}

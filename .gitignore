@@ -14,7 +14,15 @@
 /coverage
 
 # next.js
-/.next/
+# .next/ is intentionally committed: `next build` needs more memory than the
+# target shared-hosting plan allows, so the production build is built locally
+# and shipped instead of being built on the host. Only dev/debug-only pieces
+# are excluded below.
+/.next/cache/
+/.next/trace
+/.next/trace-build
+/.next/diagnostics/
+/.next/types/
 /out/
 
 # production

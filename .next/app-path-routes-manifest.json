@@ -1,0 +1,22 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/login/page": "/admin/login",
+  "/admin/page": "/admin",
+  "/admin/properties/[id]/page": "/admin/properties/[id]",
+  "/api/admin/import/route": "/api/admin/import",
+  "/api/admin/login/route": "/api/admin/login",
+  "/api/admin/properties/[id]/facilities/[facilityId]/route": "/api/admin/properties/[id]/facilities/[facilityId]",
+  "/api/admin/properties/[id]/facilities/route": "/api/admin/properties/[id]/facilities",
+  "/api/admin/properties/[id]/photos/[photoId]/route": "/api/admin/properties/[id]/photos/[photoId]",
+  "/api/admin/properties/[id]/photos/from-url/route": "/api/admin/properties/[id]/photos/from-url",
+  "/api/admin/properties/[id]/photos/route": "/api/admin/properties/[id]/photos",
+  "/api/admin/properties/[id]/reviews/[reviewId]/route": "/api/admin/properties/[id]/reviews/[reviewId]",
+  "/api/admin/properties/[id]/reviews/route": "/api/admin/properties/[id]/reviews",
+  "/api/admin/properties/[id]/route": "/api/admin/properties/[id]",
+  "/api/admin/properties/route": "/api/admin/properties",
+  "/favicon.ico/route": "/favicon.ico",
+  "/media/[...path]/route": "/media/[...path]",
+  "/page": "/",
+  "/properties/[slug]/page": "/properties/[slug]"
+}

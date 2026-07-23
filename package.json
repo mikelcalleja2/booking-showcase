@@ -6,26 +6,25 @@
     "dev": "next dev",
     "build": "next build",
     "start": "node scripts/migrate.js && next start",
-    "lint": "eslint",
-    "postinstall": "next build > postinstall.log 2>&1"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
     "cheerio": "^1.2.0",
     "jose": "^6.2.4",
     "next": "16.2.11",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
-    "prisma": "^6.19.3"
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   },
   "allowScripts": {
     "sharp@0.34.5": true,
