@@ -43,10 +43,12 @@ Butonul de import nu este un scraper automat — face o singură cerere (sau par
 în momentul apăsării, și încearcă să extragă date publice (meta tags Open Graph și JSON-LD schema.org).
 Nu salvează nimic automat: administratorul revizuiește și confirmă manual.
 
-## Deploy pe Railway + domeniu de la Namecheap
+## Deploy pe hosting-ul Namecheap (cPanel, fără Terminal)
 
-Aplicația folosește SQLite și stochează pozele pe disc, așa că are nevoie de **disc persistent**
-(Vercel nu e potrivit — filesystem efemer). Railway oferă asta simplu și ieftin.
+Aplicația e pregătită să ruleze prin funcția **„Setup Node.js App”** din cPanel (Passenger),
+fără să ai nevoie de SSH/Terminal. Fișierul `server.js` din rădăcina proiectului e punctul de
+intrare cerut de Passenger — la fiecare pornire, aplică automat migrațiile bazei de date și
+pornește serverul.
 
 ### 1. Urcă proiectul pe GitHub
 
@@ -60,40 +62,50 @@ git push -u origin main
 
 (`.env`, `dev.db` și pozele din `data/` NU se urcă — sunt excluse prin `.gitignore`.)
 
-### 2. Creează proiectul pe Railway
+### 2. Clonează repo-ul pe hosting, din cPanel
 
-1. Cont pe [railway.app](https://railway.app) (poți intra direct cu GitHub)
-2. „New Project” → „Deploy from GitHub repo” → alege repo-ul `booking-showcase`
-3. Railway detectează automat Next.js și rulează `npm install` + `npm run build` + `npm run start`
+cPanel → categoria **Files** → **„Git™ Version Control”** → **Create**:
+- „Clone a Repository” → lipești URL-ul repo-ului tău GitHub
+- Repository Path: un folder **în afara** lui `public_html` (ex: `booking-showcase`)
+- Branch: `main` → Create
 
-### 3. Adaugă un volum persistent
+(Dacă nu vezi „Git Version Control” în cPanel: descarci repo-ul ca ZIP de pe GitHub și îl urci/dezarhivezi prin **File Manager**, în același folder.)
 
-În setările serviciului → tab **Volumes** → „New Volume”:
-- Mount path: `/app/data`
+### 3. Creează aplicația Node.js
 
-Acesta va ține baza de date SQLite și pozele uploadate, ca să nu se piardă la fiecare redeploy.
+cPanel → categoria **Software** → **„Setup Node.js App”** → **Create Application**:
+
+| Câmp | Valoare |
+|---|---|
+| Node.js version | cea mai recentă disponibilă (24.x) |
+| Application mode | Production |
+| Application root | folderul unde ai clonat (ex: `booking-showcase`) |
+| Application URL | domeniul sau subdomeniul tău |
+| Application startup file | `server.js` |
+
+Apasă **Create**.
 
 ### 4. Variabile de mediu
 
-În tab-ul **Variables**, adaugă:
+Pe pagina aplicației create, la secțiunea **Environment variables**, adaugă:
 
 | Variabilă | Valoare |
 |---|---|
 | `ADMIN_PASSWORD` | o parolă puternică, aleasă de tine |
-| `SESSION_SECRET` | un string lung și aleator (ex: generat cu `openssl rand -hex 32`) |
-| `DATABASE_URL` | `file:/app/data/dev.db` |
-| `UPLOAD_DIR` | `/app/data/uploads` |
+| `SESSION_SECRET` | un string lung și aleator |
 
-Migrațiile bazei de date rulează automat la fiecare deploy (`npm run start` include `prisma migrate deploy`).
+(`DATABASE_URL` și `UPLOAD_DIR` nu trebuie setate — implicit se salvează în folderul aplicației, care e permanent pe hosting-ul tău.)
 
-### 5. Conectează domeniul de la Namecheap
+### 5. Instalează și construiește
 
-1. Cumpără domeniul pe [namecheap.com](https://namecheap.com) (asta o faci tu direct, e o achiziție)
-2. În Railway, tab-ul **Settings** al serviciului → „Custom Domain” → introdu domeniul tău → Railway îți dă
-   o valoare CNAME (ceva de genul `xxxxx.up.railway.app`)
-3. În contul Namecheap → „Domain List” → „Manage” lângă domeniul tău → „Advanced DNS” → adaugă:
-   - Tip `CNAME`, Host `@` sau `www` (după cum ceri în Railway), Value = valoarea primită de la Railway
-4. Așteaptă propagarea DNS (de obicei sub o oră) — Railway emite automat certificat SSL după ce DNS-ul e valid
+Apasă butonul **„Run NPM Install”** din pagina aplicației. Acesta rulează automat instalarea
+pachetelor, generarea clientului Prisma și `next build` (poate dura câteva minute la prima
+rulare — asta e configurat prin scriptul `postinstall` din `package.json`).
+
+### 6. Pornește aplicația
+
+Apasă **„Restart”**. La pornire, `server.js` aplică automat migrațiile bazei de date și
+pornește serverul. Accesează domeniul tău în browser — ar trebui să vezi homepage-ul.
 
 ### După fiecare modificare de cod
 
@@ -103,7 +115,21 @@ git commit -m "mesajul tău"
 git push
 ```
 
-Railway redeploy-uiește automat la fiecare push pe `main`.
+Apoi în cPanel: **Git Version Control** → „Pull or Deploy” (aduce ultimele modificări) →
+**Setup Node.js App** → „Run NPM Install” (reconstruiește) → „Restart”.
+
+### Dacă ceva nu merge
+
+Mediile de shared hosting variază mult între ele — dacă un pas nu se comportă exact așa
+(buton lipsă, eroare la instalare, etc.), spune-mi exact ce vezi și te ajut să găsim alternativa.
+
+## Alternativă: Railway (dacă renunți la hosting-ul Namecheap)
+
+Dacă la un moment dat preferi ceva cu deploy automat la fiecare `git push` (fără să intri manual
+în cPanel), [Railway](https://railway.app) e alternativa recomandată — conectezi același repo
+GitHub, adaugi un volum persistent montat la `/app/data`, și setezi `DATABASE_URL=file:/app/data/dev.db`
++ `UPLOAD_DIR=/app/data/uploads` (pe lângă `ADMIN_PASSWORD`/`SESSION_SECRET`). Domeniul de la
+Namecheap se conectează la fel, prin DNS (CNAME către adresa dată de Railway).
 
 ## Stack tehnic
 
