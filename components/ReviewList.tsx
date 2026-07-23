@@ -1,4 +1,4 @@
-import type { Review } from "@prisma/client";
+import type { Review } from "@/generated/prisma-client";
 
 function ratingColor(rating: number) {
   if (rating >= 9) return "bg-green-600";

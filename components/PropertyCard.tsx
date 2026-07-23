@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Photo, Property } from "@prisma/client";
+import type { Photo, Property } from "@/generated/prisma-client";
 
 export function PropertyCard({ property }: { property: Property & { photos: Photo[] } }) {
   const cover = property.photos[0];

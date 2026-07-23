@@ -1,16 +1,17 @@
 // Entry point for cPanel's "Setup Node.js App" (Passenger). Passenger requires this file
 // directly and expects it to listen on process.env.PORT — it does not run "npm start".
-// Runs pending Prisma migrations once on boot (idempotent — safe on every restart), then
-// starts the Next.js production server. Not used on platforms that run "npm start" (e.g.
-// Railway) — those use the "start" script in package.json instead.
-const { execSync } = require("child_process");
+// Applies pending migrations once on boot (idempotent — safe on every restart) via
+// scripts/migrate.js (not the Prisma CLI, see that file for why), then starts the Next.js
+// production server. Not used on platforms that run "npm start" (e.g. Railway) — those use
+// the "start" script in package.json instead.
 const { createServer } = require("http");
 const next = require("next");
+const { runMigrations } = require("./scripts/migrate");
 
 try {
-  execSync("npx prisma migrate deploy", { stdio: "inherit", cwd: __dirname });
+  runMigrations();
 } catch (err) {
-  console.error("Prisma migrate deploy failed:", err.message);
+  console.error("Migration failed:", err);
 }
 
 const app = next({ dev: false, dir: __dirname });

@@ -5,12 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "prisma migrate deploy && next start",
+    "start": "node scripts/migrate.js && next start",
     "lint": "eslint",
-    "postinstall": "(prisma generate && next build) > postinstall.log 2>&1"
+    "postinstall": "next build > postinstall.log 2>&1"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -18,7 +17,6 @@
     "cheerio": "^1.2.0",
     "jose": "^6.2.4",
     "next": "16.2.11",
-    "prisma": "^6.19.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tailwindcss": "^4",
@@ -26,7 +24,8 @@
   },
   "devDependencies": {
     "eslint": "^9",
-    "eslint-config-next": "16.2.11"
+    "eslint-config-next": "16.2.11",
+    "prisma": "^6.19.3"
   },
   "allowScripts": {
     "sharp@0.34.5": true,

@@ -1,4 +1,4 @@
-import type { Facility } from "@prisma/client";
+import type { Facility } from "@/generated/prisma-client";
 
 export function FacilityList({ facilities }: { facilities: Facility[] }) {
   if (facilities.length === 0) return null;

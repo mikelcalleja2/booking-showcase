@@ -1,4 +1,4 @@
-import type { Photo } from "@prisma/client";
+import type { Photo } from "@/generated/prisma-client";
 
 export function Gallery({ photos, alt }: { photos: Photo[]; alt: string }) {
   if (photos.length === 0) {

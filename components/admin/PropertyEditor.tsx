@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { Facility, Photo, Property, Review } from "@prisma/client";
+import type { Facility, Photo, Property, Review } from "@/generated/prisma-client";
 
 type FullProperty = Property & { facilities: Facility[]; photos: Photo[]; reviews: Review[] };
 
