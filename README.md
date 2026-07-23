@@ -1,7 +1,8 @@
 # Booking Showcase
 
 Pagini de prezentare ("trust pages") pentru proprietățile tale de pe Booking.com — poze, facilități și
-recenzii de la clienți, plus un panou de administrare pentru a le gestiona.
+recenzii de la clienți, plus un panou de administrare pentru a le gestiona. Site-ul public și panoul
+admin sunt în engleză; acest README e în română, pentru tine ca operator.
 
 ## Rulare locală
 
@@ -22,39 +23,87 @@ Copiază `.env.example` în `.env` și completează:
 - `DATABASE_URL` — implicit `file:./dev.db` (SQLite local)
 - `ADMIN_PASSWORD` — parola pentru `/admin`
 - `SESSION_SECRET` — string lung și aleator, folosit pentru semnarea cookie-ului de sesiune
+- `UPLOAD_DIR` — opțional local (implicit `./data/uploads`); obligatoriu în producție, vezi secțiunea de deploy
 
 ## Adăugarea primei proprietăți
 
 1. Autentifică-te în `/admin`.
-2. Apasă „Adaugă proprietate nouă” și dă-i un nume.
+2. Apasă „Add property” și dă-i un nume.
 3. Pe pagina proprietății:
-   - (opțional) lipește linkul de pe Booking.com și apasă **„Importă din URL”** — extrage best-effort
-     titlu, descriere, adresă și poze sugerate. Preluarea se face o singură dată, la cerere; nu rulează
-     automat sau repetat. Booking.com poate bloca sau randa conținutul prin JavaScript, caz în care
-     importul întoarce puține date sau eșuează — completează manual ce lipsește.
+   - (opțional) folosește secțiunea „Import from Booking.com” — recomandat modul „From pasted HTML”
+     (Booking.com blochează cererile automate directe de pe server)
    - completează/verifică datele generale și salvează
    - adaugă facilități, poze și recenzii
-   - apasă butonul „Ciornă” din colțul din dreapta sus pentru a publica proprietatea
-4. Proprietatea publicată apare pe homepage (`/`) și la `/proprietati/[slug]`.
+   - apasă butonul „Draft” din colțul din dreapta sus pentru a publica proprietatea
+4. Proprietatea publicată apare pe homepage (`/`) și la `/properties/[slug]`.
 
 ## Note despre import
 
-Butonul „Importă din URL” nu este un scraper automat — face o singură cerere HTTP către pagina indicată,
+Butonul de import nu este un scraper automat — face o singură cerere (sau parsează HTML-ul lipit de tine),
 în momentul apăsării, și încearcă să extragă date publice (meta tags Open Graph și JSON-LD schema.org).
-Nu salvează nimic automat: administratorul revizuiește și confirmă manual. Această abordare a fost aleasă
-în locul unui scraper repetat/automat pentru a evita riscul de încălcare a termenilor de utilizare Booking.com.
+Nu salvează nimic automat: administratorul revizuiește și confirmă manual.
 
-## Hosting recomandat
+## Deploy pe Railway + domeniu de la Namecheap
 
-Aplicația folosește SQLite (fișier local) și stochează pozele uploadate pe disc
-(`public/uploads/`), așa că are nevoie de **disc persistent**. Vercel nu e potrivit (filesystem efemer).
+Aplicația folosește SQLite și stochează pozele pe disc, așa că are nevoie de **disc persistent**
+(Vercel nu e potrivit — filesystem efemer). Railway oferă asta simplu și ieftin.
 
-Recomandare: [Railway](https://railway.app) sau [Render](https://render.com) — ambele oferă un volum
-persistent la cost mic, suficient pentru acest tip de aplicație. La deploy:
+### 1. Urcă proiectul pe GitHub
 
-1. Setează variabilele de mediu (`ADMIN_PASSWORD`, `SESSION_SECRET`, `DATABASE_URL`)
-2. Montează un disc persistent pentru `dev.db` și `public/uploads/`
-3. Rulează `npx prisma migrate deploy` la fiecare deploy pentru a aplica migrațiile
+Ai nevoie de un cont GitHub (gratuit) și de un repo nou cu acest cod. Din folderul proiectului:
+
+```bash
+git remote add origin https://github.com/<user-ul-tau>/booking-showcase.git
+git branch -M main
+git push -u origin main
+```
+
+(`.env`, `dev.db` și pozele din `data/` NU se urcă — sunt excluse prin `.gitignore`.)
+
+### 2. Creează proiectul pe Railway
+
+1. Cont pe [railway.app](https://railway.app) (poți intra direct cu GitHub)
+2. „New Project” → „Deploy from GitHub repo” → alege repo-ul `booking-showcase`
+3. Railway detectează automat Next.js și rulează `npm install` + `npm run build` + `npm run start`
+
+### 3. Adaugă un volum persistent
+
+În setările serviciului → tab **Volumes** → „New Volume”:
+- Mount path: `/app/data`
+
+Acesta va ține baza de date SQLite și pozele uploadate, ca să nu se piardă la fiecare redeploy.
+
+### 4. Variabile de mediu
+
+În tab-ul **Variables**, adaugă:
+
+| Variabilă | Valoare |
+|---|---|
+| `ADMIN_PASSWORD` | o parolă puternică, aleasă de tine |
+| `SESSION_SECRET` | un string lung și aleator (ex: generat cu `openssl rand -hex 32`) |
+| `DATABASE_URL` | `file:/app/data/dev.db` |
+| `UPLOAD_DIR` | `/app/data/uploads` |
+
+Migrațiile bazei de date rulează automat la fiecare deploy (`npm run start` include `prisma migrate deploy`).
+
+### 5. Conectează domeniul de la Namecheap
+
+1. Cumpără domeniul pe [namecheap.com](https://namecheap.com) (asta o faci tu direct, e o achiziție)
+2. În Railway, tab-ul **Settings** al serviciului → „Custom Domain” → introdu domeniul tău → Railway îți dă
+   o valoare CNAME (ceva de genul `xxxxx.up.railway.app`)
+3. În contul Namecheap → „Domain List” → „Manage” lângă domeniul tău → „Advanced DNS” → adaugă:
+   - Tip `CNAME`, Host `@` sau `www` (după cum ceri în Railway), Value = valoarea primită de la Railway
+4. Așteaptă propagarea DNS (de obicei sub o oră) — Railway emite automat certificat SSL după ce DNS-ul e valid
+
+### După fiecare modificare de cod
+
+```bash
+git add -A
+git commit -m "mesajul tău"
+git push
+```
+
+Railway redeploy-uiește automat la fiecare push pe `main`.
 
 ## Stack tehnic
 
