@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  shortDescription String
+  description      String
+  address          String
+  city             String
+  pricePerNight    Float
+  currency         String   @default("EUR")
+  bookingUrl       String
+  published        Boolean  @default(false)
+  checkInTime        String @default("From 14:00")
+  checkOutTime       String @default("Until 11:00")
+  cancellationPolicy String @default("Free cancellation up to 48 hours before check-in. Cancellations made less than 48 hours before check-in, or no-shows, are subject to a charge equal to the first night's stay. Please contact us directly if you need to change your dates.")
+  houseRules         String @default("No smoking inside the property. No parties or events. Pets are not allowed unless agreed in advance. Quiet hours are from 22:00 to 08:00. A valid ID is required at check-in.")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  facilities Facility[]
+  photos     Photo[]
+  reviews    Review[]
+}
+
+model Facility {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  label      String
+  icon       String   @default("check")
+}
+
+model Photo {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  url        String
+  alt        String   @default("")
+  sortOrder  Int      @default(0)
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  propertyId String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  guestName   String
+  rating      Float
+  text        String
+  reviewDate  DateTime
+  sourceLabel String   @default("Booking.com")
+}
