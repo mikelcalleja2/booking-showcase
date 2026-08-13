@@ -1,0 +1,3 @@
+{
+  "/api/admin/properties/import-csv/route": "app/api/admin/properties/import-csv/route.js"
+}

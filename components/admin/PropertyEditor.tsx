@@ -32,8 +32,14 @@ export function PropertyEditor({ initialProperty }: { initialProperty: FullPrope
   const [newFacility, setNewFacility] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importingZip, setImportingZip] = useState(false);
+  const [zipMessage, setZipMessage] = useState<string | null>(null);
+  const zipInputRef = useRef<HTMLInputElement>(null);
 
   const [newReview, setNewReview] = useState({ guestName: "", rating: "9", text: "", reviewDate: formatDateInput(new Date()) });
+  const [importingReviews, setImportingReviews] = useState(false);
+  const [reviewsCsvMessage, setReviewsCsvMessage] = useState<string | null>(null);
+  const reviewsCsvInputRef = useRef<HTMLInputElement>(null);
 
   async function refetch() {
     const res = await fetch(`/api/admin/properties/${property.id}`);
@@ -171,9 +177,63 @@ export function PropertyEditor({ initialProperty }: { initialProperty: FullPrope
     }
   }
 
+  async function handleZipUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportingZip(true);
+    setZipMessage(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch(`/api/admin/properties/${property.id}/photos/import-zip`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setZipMessage(data.error ?? "Import failed");
+        return;
+      }
+      setZipMessage(
+        `${data.saved} photo(s) imported` + (data.skipped.length ? `, ${data.skipped.length} skipped` : ""),
+      );
+      await refetch();
+      if (zipInputRef.current) zipInputRef.current.value = "";
+    } finally {
+      setImportingZip(false);
+    }
+  }
+
   async function removePhoto(photoId: string) {
     await fetch(`/api/admin/properties/${property.id}/photos/${photoId}`, { method: "DELETE" });
     await refetch();
+  }
+
+  async function handleReviewsCsvUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportingReviews(true);
+    setReviewsCsvMessage(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch(`/api/admin/properties/${property.id}/reviews/import-csv`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setReviewsCsvMessage(data.error ?? "Import failed");
+        return;
+      }
+      setReviewsCsvMessage(
+        `${data.imported} review(s) imported` + (data.skipped.length ? `, ${data.skipped.length} skipped` : ""),
+      );
+      await refetch();
+      if (reviewsCsvInputRef.current) reviewsCsvInputRef.current.value = "";
+    } finally {
+      setImportingReviews(false);
+    }
   }
 
   async function addReview(e: React.FormEvent) {
@@ -504,6 +564,21 @@ export function PropertyEditor({ initialProperty }: { initialProperty: FullPrope
           disabled={uploading}
           className="text-sm"
         />
+        <div className="mt-3 border-t border-slate-100 pt-3">
+          <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="zip-file">
+            Import photos from ZIP
+          </label>
+          <input
+            id="zip-file"
+            ref={zipInputRef}
+            type="file"
+            accept=".zip,application/zip"
+            onChange={handleZipUpload}
+            disabled={importingZip}
+            className="text-sm"
+          />
+          {zipMessage && <p className="mt-1 text-sm text-slate-600">{zipMessage}</p>}
+        </div>
       </section>
 
       {/* Reviews */}
@@ -527,6 +602,21 @@ export function PropertyEditor({ initialProperty }: { initialProperty: FullPrope
             </div>
           ))}
           {property.reviews.length === 0 && <p className="text-sm text-slate-400">No reviews added yet.</p>}
+        </div>
+        <div className="mb-3 border-t border-slate-100 pt-3">
+          <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="reviews-csv-file">
+            Import reviews from CSV (guest_name, rating, text, review_date, source_label)
+          </label>
+          <input
+            id="reviews-csv-file"
+            ref={reviewsCsvInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            onChange={handleReviewsCsvUpload}
+            disabled={importingReviews}
+            className="text-sm"
+          />
+          {reviewsCsvMessage && <p className="mt-1 text-sm text-slate-600">{reviewsCsvMessage}</p>}
         </div>
         <form onSubmit={addReview} className="space-y-2 rounded-lg bg-slate-50 p-3">
           <div className="grid grid-cols-2 gap-2">

@@ -72,6 +72,14 @@
       "namedRegex": "^/api/admin/properties/(?<nxtPid>[^/]+?)/photos/from\\-url(?:/)?$"
     },
     {
+      "page": "/api/admin/properties/[id]/photos/import-zip",
+      "regex": "^/api/admin/properties/([^/]+?)/photos/import\\-zip(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/properties/(?<nxtPid>[^/]+?)/photos/import\\-zip(?:/)?$"
+    },
+    {
       "page": "/api/admin/properties/[id]/photos/[photoId]",
       "regex": "^/api/admin/properties/([^/]+?)/photos/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -87,6 +95,14 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/admin/properties/(?<nxtPid>[^/]+?)/reviews(?:/)?$"
+    },
+    {
+      "page": "/api/admin/properties/[id]/reviews/import-csv",
+      "regex": "^/api/admin/properties/([^/]+?)/reviews/import\\-csv(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/properties/(?<nxtPid>[^/]+?)/reviews/import\\-csv(?:/)?$"
     },
     {
       "page": "/api/admin/properties/[id]/reviews/[reviewId]",
@@ -162,6 +178,12 @@
       "regex": "^/api/admin/properties(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/admin/properties(?:/)?$"
+    },
+    {
+      "page": "/api/admin/properties/import-csv",
+      "regex": "^/api/admin/properties/import\\-csv(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/properties/import\\-csv(?:/)?$"
     },
     {
       "page": "/favicon.ico",

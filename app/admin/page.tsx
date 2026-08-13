@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { NewPropertyForm } from "@/components/admin/NewPropertyForm";
+import { CsvImportForm } from "@/components/admin/CsvImportForm";
 import { PropertyListRow } from "@/components/admin/PropertyListRow";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 
@@ -24,6 +25,10 @@ export default async function AdminDashboard() {
 
         <div className="mb-8 rounded-xl border border-slate-200 bg-white p-5">
           <NewPropertyForm />
+        </div>
+
+        <div className="mb-8 rounded-xl border border-slate-200 bg-white p-5">
+          <CsvImportForm />
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5">

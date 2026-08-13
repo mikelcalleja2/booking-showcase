@@ -23,6 +23,7 @@
 /.next/trace-build
 /.next/diagnostics/
 /.next/types/
+/.next/dev/
 /out/
 
 # production
